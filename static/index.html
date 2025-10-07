@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Statut du robot autonome</title>
+<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+  :root{
+    --bg:#f3f6fb; --card:#fff; --text:#1f2937; --muted:#6b7280; --line:#e5e7eb;
+    --badge:#fde68a; --badge-text:#7a5b00; --shadow:0 10px 24px rgba(0,0,0,.08);
+    --radius:16px;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial;
+    background: radial-gradient(1200px 800px at 50% -200px, #e8eefc 0%, transparent 60%), var(--bg);
+    color:var(--text)
+  }
+  .container{max-width:980px;margin:48px auto;padding:0 16px}
+  .card{
+    background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+    box-shadow:var(--shadow); padding:20px 22px;
+  }
+  .header{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+  .logo{
+    width:38px;height:38px;border-radius:12px;background:#e9f0ff;display:grid;place-items:center;
+    font-weight:700;color:#4164ff
+  }
+  h1{font-size:20px; margin:0}
+  .subtitle{color:var(--muted); font-size:13px}
+  .row{display:flex;gap:16px;flex-wrap:wrap}
+  .badge{
+    display:inline-block; background:var(--badge); color:var(--badge-text);
+    border-radius:10px; padding:10px 14px; font-weight:700;
+  }
+  .meta{margin-left:auto; display:flex; gap:20px; color:var(--muted); font-size:13px}
+  .grid{display:grid; grid-template-columns:1.5fr 1fr; gap:16px; margin-top:14px}
+  .panel{
+    border:1px solid var(--line); border-radius:12px; padding:14px; background:#fafbfd;
+    min-height:210px;
+  }
+  .panel h3{margin:0 0 10px 0; font-size:14px; color:#111827}
+  .kv{display:grid; grid-template-columns:140px 1fr; gap:6px; font-size:14px; margin-top:10px; color:#111827}
+  .muted{color:var(--muted)}
+  .log{
+    background:#fff; border:1px solid var(--line); border-radius:8px; padding:10px;
+    font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    height:190px; overflow:auto; font-size:13px; line-height:1.4;
+  }
+  .footer{margin-top:10px;color:var(--muted);font-size:12px;text-align:center}
+  .actions{display:flex;gap:8px;margin-left:8px}
+  button{
+    border:1px solid var(--line); background:#fff; border-radius:10px; padding:8px 12px;
+    cursor:pointer; font-weight:600;
+  }
+  button:hover{background:#f8fafc}
+</style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <div class="row" style="align-items:center;margin-bottom:8px">
+        <div class="header">
+          <div class="logo">R</div>
+          <div>
+            <h1>Statut du robot autonome</h1>
+            <div class="subtitle">Page de monitoring — lecture seule (mise à jour automatique)</div>
+          </div>
+        </div>
+        <div class="actions">
+          <button onclick="fetch('/start').then(()=>console.log('Start envoyé'))">Start</button>
+          <button onclick="fetch('/stop').then(()=>console.log('Stop envoyé'))">Stop</button>
+        </div>
+      </div>
+      <div class="row" style="align-items:center;margin:10px 0 6px">
+        <div class="badge" id="badge">—</div>
+        <div class="meta">
+          <div>Dernière mise à jour : <strong id="maj">--:--:--</strong></div>
+          <div>IP : <span id="ip">—</span></div>
+          <div>Vitesse (duty) : <strong id="duty">—</strong></div>
+        </div>
+      </div>
+      <div class="grid">
+        <div class="panel">
+          <h3>Comportement courant</h3>
+          <div style="font-weight:700;margin-bottom:6px" id="etat">—</div>
+          <div class="muted" id="exp">Explication : Le robot exécute sa boucle d'autonomie. Ici s'affiche l'action actuelle.</div>
+          <div class="kv">
+            <div class="muted">Capteurs</div> <div id="caps">obstacle : —</div>
+            <div class="muted">Dernière manœuvre</div> <div id="last">—</div>
+          </div>
+        </div>
+        <div class="panel">
+          <h3>Journal (récent)</h3>
+          <div id="log" class="log">(vide)</div>
+        </div>
+      </div>
+      <div class="footer">Mode preview : si la page ne trouve pas /status, elle simule des états.</div>
+    </div>
+  </div>
+
+<script>
+function colorize(etat){
+  const s = (etat||"").toLowerCase();
+  if (s.includes("obstacle"))   return {bg:"#fde68a", fg:"#7a5b00"};
+  if (s.includes("avance"))     return {bg:"#d1fae5", fg:"#065f46"};
+  if (s.includes("recul"))      return {bg:"#dbeafe", fg:"#1e3a8a"};
+  if (s.includes("tourne"))     return {bg:"#f3e8ff", fg:"#6b21a8"};
+  if (s.includes("stop")||s.includes("idle")) return {bg:"#e5e7eb", fg:"#374151"};
+  return {bg:"#f3f4f6", fg:"#374151"};
+}
+
+let busy = false;
+async function update(){
+  if (busy) return;
+  busy = true;
+  try{
+    const r = await fetch('/status?_=' + Date.now(), { cache: 'no-store' });
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    const data = await r.json();
+
+    console.log("DEBUG - Etat reçu:", data.etat);
+
+    const elBadge = document.getElementById('badge');
+    const c = colorize(data.etat);
+    elBadge.style.background = c.bg;
+    elBadge.style.color = c.fg;
+    elBadge.textContent = data.etat;
+
+    document.getElementById('etat').textContent = data.etat;
+    document.getElementById('maj').textContent = new Date(data.ts*1000).toLocaleTimeString();
+    document.getElementById('duty').textContent = data.duty;
+    document.getElementById('ip').textContent = data.ip || "—";
+    document.getElementById('caps').textContent = "obstacle : " + (data.obstacle ? "oui" : "non");
+    document.getElementById('last').textContent = data.last || "—";
+
+    let out = '';
+    (data.log||[]).forEach(item=>{
+      const t = new Date(item[0]*1000).toLocaleTimeString();
+      out += `[${t}] ${item[1]}<br>`;
+    });
+    document.getElementById('log').innerHTML = out || '(vide)';
+  }catch(e){
+    document.getElementById('etat').textContent = "Erreur";
+    document.getElementById('log').textContent = "Impossible de joindre le serveur: " + e;
+  }finally{
+    busy = false;
+  }
+}
+
+setInterval(update, 200);
+update();
+</script>
+
+</body>
+</html>
