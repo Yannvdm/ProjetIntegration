@@ -203,7 +203,7 @@ _thread.start_new_thread(http_server, (ip,))
 # Si tu as un capteur ultrason (HC-SR04) ou capteurs IR, tu peux implémenter detect_obstacle() ici.
 # Exemple simple (placeholder) : retourne False par défaut.
 def detect_obstacle():
-    # TODO: remplacer par lecture de capteur (True si obstacle proche)
+    # lecture de capteur (True si obstacle proche)
     return False
 
 # --- Boucle d'autonomie (exemple simple) ---
