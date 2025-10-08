@@ -26,7 +26,7 @@ def add_log(msg):
     print(f"[{time.strftime('%H:%M:%S')}] {msg}")
     sys.stdout.flush()
 
-def set_etat(new_state, manoeuvre=None, dist=None):
+def set_etat(new_state, manoeuvre=None, dist=None, obstacle=False):
     global etat, last_manoeuvre, obstacle_message, distance
     changed = False
     with state_lock:
@@ -36,15 +36,13 @@ def set_etat(new_state, manoeuvre=None, dist=None):
         if manoeuvre:
             last_manoeuvre = manoeuvre
         if dist is not None:
-            distance = dist  # Mémorisation distance reçue
-        if new_state.lower() == "stop" and dist is not None:
+            distance = dist
+        if new_state.lower() == "stop" and dist is not None and obstacle:
             obstacle_message = f"Obstacle à {dist:.1f} cm, changement de direction"
-        elif new_state.lower() == "avance":
+        else:
             obstacle_message = ""
     if changed:
         add_log(new_state)
-        print(f"DEBUG set_etat called with: {new_state}, manoeuvre: {manoeuvre}, dist: {dist}")
-        sys.stdout.flush()
 
 def on_connect(client, userdata, flags, rc):
     add_log(f"MQTT connecté avec code {rc}")
@@ -56,10 +54,11 @@ def on_message(client, userdata, msg):
         payload = json.loads(msg.payload.decode())
         new_state = payload.get("etat")
         new_manoeuvre = payload.get("manoeuvre")
-        dist = payload.get("distance")  # distance en cm, optionnel
+        dist = payload.get("distance")
+        obstacle = payload.get("obstacle", False)
         if new_state:
-            set_etat(new_state, new_manoeuvre, dist)
-            add_log(f"MQTT reçu état: {new_state}, manoeuvre: {new_manoeuvre}, distance: {dist}")
+            set_etat(new_state, new_manoeuvre, dist, obstacle)
+            add_log(f"MQTT reçu état: {new_state}, manoeuvre: {new_manoeuvre}, distance: {dist}, obstacle: {obstacle}")
     except Exception as e:
         add_log(f"Erreur MQTT message: {e}")
 

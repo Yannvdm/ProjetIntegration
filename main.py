@@ -85,28 +85,24 @@ def stop(distance):
 
 def avancer(distance, vitesse=VITESSE):
     global obstacle
-    obstacle = False
     in3.high(); in4.low(); in1.high(); in2.low()
     enA.duty_u16(vitesse); enB.duty_u16(vitesse)
     send_mqtt("Avance", "Avancer", distance, obstacle)
 
 def reculer(distance, vitesse=VITESSE):
     global obstacle
-    obstacle = False
     in3.low(); in4.high(); in1.low(); in2.high()
     enA.duty_u16(vitesse); enB.duty_u16(vitesse)
     send_mqtt("Recul", "Reculer", distance, obstacle)
 
 def tourner_gauche(distance, vitesse=VITESSE):
     global obstacle
-    obstacle = False
     in3.low(); in4.high(); in1.high(); in2.low()
     enA.duty_u16(vitesse); enB.duty_u16(vitesse)
     send_mqtt("Tourne", "Tourner gauche", distance, obstacle)
 
 def tourner_droite(distance, vitesse=VITESSE):
     global obstacle
-    obstacle = False
     in3.high(); in4.low(); in1.low(); in2.high()
     enA.duty_u16(vitesse); enB.duty_u16(vitesse)
     send_mqtt("Tourne", "Tourner droite", distance, obstacle)
