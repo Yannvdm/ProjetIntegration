@@ -104,3 +104,5 @@ try:
 except KeyboardInterrupt:
     stop()
     print("\nProgramme arrêté par l'utilisateur.")
+
+# Fin du programme
