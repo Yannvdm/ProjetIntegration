@@ -1,0 +1,21 @@
+<definition height="40" type="element" width="70" hotspot_x="25" link_type="simple" hotspot_y="13" version="0.90">
+    <uuid uuid="{07ff0a0b-7f07-43b2-a102-dcdbd87faf3e}"/>
+    <names>
+        <name lang="en">HC-SR04 Ultrasonic sensor</name>
+    </names>
+    <elementInformations/>
+    <informations></informations>
+    <description>
+        <circle y="0" x="-20" antialias="false" diameter="20" style="line-style:normal;line-weight:normal;filling:none;color:black"/>
+        <text font="Monospace,2,-1,0,50,0,0,0,0,0" rotation="90" text="Trig" y="-1" x="11" color="#000000"/>
+        <text font="Monospace,2,-1,0,50,0,0,0,0,0" rotation="90" text="Echo" y="-1" x="7" color="#000000"/>
+        <text font="Monospace,2,-1,0,50,0,0,0,0,0" rotation="90" text="Gnd" y="-1" x="3" color="#000000"/>
+        <circle y="0" x="20" antialias="false" diameter="20" style="line-style:normal;line-weight:normal;filling:none;color:black"/>
+        <rect height="24" rx="0" ry="0" y="-2" width="64" x="-22" antialias="false" style="line-style:normal;line-weight:normal;filling:none;color:black"/>
+        <text font="Monospace,2,-1,0,50,0,0,0,0,0" rotation="450" text="Vcc" y="-1" x="15" color="#000000"/>
+        <terminal uuid="{27c8513b-43ed-4de9-b1b4-b40210dfd32f}" type="Generic" y="-6" x="12" name="" orientation="n"/>
+        <terminal uuid="{7c4e08ce-73ee-4f04-9a96-901fa9523dfd}" type="Generic" y="-6" x="16" name="" orientation="n"/>
+        <terminal uuid="{b9380538-ac91-488e-8ffc-4f45b8a781df}" type="Generic" y="-6" x="4" name="" orientation="n"/>
+        <terminal uuid="{1b086679-8ed3-4c2d-8466-ba2f89cfbf01}" type="Generic" y="-6" x="8" name="" orientation="n"/>
+    </description>
+</definition>
