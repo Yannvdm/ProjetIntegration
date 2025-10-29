@@ -15,22 +15,22 @@ while not wlan.isconnected():
 print("Connecté, IP:", wlan.ifconfig()[0])
 
 # Config MQTT
-MQTT_SERV = "10.171.184.167"
+MQTT_SERV = "192.168.137.246"
 MQTT_TOPIC = "robot/status"
 CLIENT_ID = "pico_robot"
 client = MQTTClient(CLIENT_ID, MQTT_SERV)
 client.connect()
 
-# Flag pour le contrôle
-running = True  # Par défaut, le robot tourne
-stop_requested = False
+# Flags de contrôle
+running = True           # Par défaut, le robot avance
+stop_requested = False   # Pour traiter l'action spéciale stop
 
 def sub_cb(topic, msg):
     global running, stop_requested
     print("Commande reçue:", topic, msg)
     if msg == b'stop':
         running = False
-        stop_requested = True  # marque le changement pour l'action hors callback
+        stop_requested = True  # active le traitement spécial
     elif msg == b'start':
         running = True
 
@@ -58,7 +58,7 @@ def send_mqtt(etat, manoeuvre, distance, obstacle):
         except Exception as e:
             print("Erreur MQTT:", e)
 
-# Moteurs
+# Moteurs et pins
 enA = PWM(Pin(0)); in3 = Pin(2, Pin.OUT); in4 = Pin(1, Pin.OUT)
 enB = PWM(Pin(3)); in1 = Pin(4, Pin.OUT); in2 = Pin(6, Pin.OUT)
 enA.freq(1000); enB.freq(1000); VITESSE = 40000
@@ -125,10 +125,19 @@ try:
             except Exception as e2:
                 print("Reconnexion MQTT échouée:", e2)
 
-        # Si arrêt demandé
+        # Si arrêt demandé (stop spécial : caisse ou obstacle)
         if stop_requested:
-            stop(0)
+            d = mesure_distance() or 0
+            stop(d)
+            time.sleep(1.0)
+            reculer(d)
+            time.sleep(1.0)
+            stop(d)
+            time.sleep(0.5)
+            avancer(d)
             stop_requested = False
+            running = True
+
         # Si pas en marche: ne pas déplacer
         if not running:
             stop(0)
@@ -162,7 +171,6 @@ try:
         time.sleep(0.2)
 
 except KeyboardInterrupt:
+    d = mesure_distance() or 0
     stop(d)
     print("Programme arrêté")
-
-
