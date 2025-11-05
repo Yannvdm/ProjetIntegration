@@ -4,15 +4,16 @@ import paho.mqtt.client as mqtt
 
 app = Flask(__name__, static_url_path="", static_folder="static")
 
-# ------- Etat partagé -------
+# ------- État partagé -------
 state_lock = threading.Lock()
 etat = "Initialisation"
 last_manoeuvre = "—"
 duty = 0
 obstacle = False
 ip = None
-obstacle_message = ""  # Nouveau champ pour message obstacle
-distance = None        # Variable globale pour distance capteur
+obstacle_message = ""
+distance = None
+vision_label = "—"  # Nouveau champ pour le label de vision
 LOG_MAX = 100
 
 log = []
@@ -26,8 +27,8 @@ def add_log(msg):
     print(f"[{time.strftime('%H:%M:%S')}] {msg}")
     sys.stdout.flush()
 
-def set_etat(new_state, manoeuvre=None, dist=None, obstacle=False):
-    global etat, last_manoeuvre, obstacle_message, distance
+def set_etat(new_state, manoeuvre=None, dist=None, obs=False):
+    global etat, last_manoeuvre, obstacle_message, distance, obstacle
     changed = False
     with state_lock:
         if new_state != etat:
@@ -37,7 +38,8 @@ def set_etat(new_state, manoeuvre=None, dist=None, obstacle=False):
             last_manoeuvre = manoeuvre
         if dist is not None:
             distance = dist
-        if new_state.lower() == "stop" and dist is not None and obstacle:
+        obstacle = obs
+        if new_state.lower() == "stop" and dist is not None and obs:
             obstacle_message = f"Obstacle à {dist:.1f} cm, changement de direction"
         else:
             obstacle_message = ""
@@ -47,18 +49,24 @@ def set_etat(new_state, manoeuvre=None, dist=None, obstacle=False):
 def on_connect(client, userdata, flags, rc):
     add_log(f"MQTT connecté avec code {rc}")
     client.subscribe("robot/status")
+    client.subscribe("robot/vision")  # Abonnement au topic vision
 
 def on_message(client, userdata, msg):
     import json
+    global vision_label
     try:
-        payload = json.loads(msg.payload.decode())
-        new_state = payload.get("etat")
-        new_manoeuvre = payload.get("manoeuvre")
-        dist = payload.get("distance")
-        obstacle = payload.get("obstacle", False)
-        if new_state:
-            set_etat(new_state, new_manoeuvre, dist, obstacle)
-            add_log(f"MQTT reçu état: {new_state}, manoeuvre: {new_manoeuvre}, distance: {dist}, obstacle: {obstacle}")
+        if msg.topic == "robot/vision":
+            vision_label = msg.payload.decode()
+            add_log(f"Vision détectée : {vision_label}")
+        elif msg.topic == "robot/status":
+            payload = json.loads(msg.payload.decode())
+            new_state = payload.get("etat")
+            new_manoeuvre = payload.get("manoeuvre")
+            dist = payload.get("distance")
+            obs = payload.get("obstacle", False)
+            if new_state:
+                set_etat(new_state, new_manoeuvre, dist, obs)
+                add_log(f"MQTT reçu état: {new_state}, manoeuvre: {new_manoeuvre}, distance: {dist}, obstacle: {obs}")
     except Exception as e:
         add_log(f"Erreur MQTT message: {e}")
 
@@ -91,7 +99,8 @@ def status():
             "obstacle": obstacle,
             "last": last_manoeuvre,
             "obstacle_message": obstacle_message,
-            "distance": distance  # Ajout de la distance à la réponse JSON
+            "distance": distance,
+            "vision_label": vision_label  # Ajout du label vision à la réponse
         }
     resp = make_response(jsonify(payload))
     resp.headers["Cache-Control"] = "no-store"

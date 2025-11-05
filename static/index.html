@@ -1,140 +1,159 @@
 <!doctype html>
 <html lang="fr">
 <head>
-<meta charset="utf-8" />
-<title>Statut du robot autonome</title>
-<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<style>
-  :root{
-    --bg: #f3f6fb; --card: #fff; --text: #1f2937; --muted: #6b7280; --line: #e5e7eb;
-    --badge: #fde68a; --badge-text: #7a5b00; --shadow: 0 10px 24px rgba(0,0,0,.08);
-    --radius: 16px;
-  }
-  *{box-sizing:border-box;}
-  body{
-    margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial;
-    background: radial-gradient(1200px 800px at 50% -200px, #e8eefc 0%, transparent 60%), var(--bg);
-    color: var(--text);
-  }
-  .container{max-width:980px; margin:48px auto; padding:0 16px;}
-  .card{
-    background: var(--card); border:1px solid var(--line); border-radius: var(--radius);
-    box-shadow: var(--shadow); padding:20px 22px;
-  }
-  .header{display:flex; align-items:center; gap:12px; margin-bottom:10px;}
-  .logo{
-    width:38px; height:38px; border-radius:12px; background:#e9f0ff; display:grid; place-items:center;
-    font-weight:700; color:#4164ff;
-  }
-  h1{font-size:20px; margin:0;}
-  .row{display:flex; gap:16px; flex-wrap:wrap; align-items:center; justify-content:space-between; margin-bottom:10px;}
-  .badge{
-    display:inline-block; border-radius:12px; padding:28px 40px; font-weight:700; font-size:30px; user-select:none;
-    background: var(--badge); color: var(--badge-text); transition: background 0.2s, color 0.2s;
-  }
-  .actions{display:flex; gap:10px;}
-  button{
-    background:#fff; border:1px solid var(--line); border-radius:10px;
-    padding:10px 16px; font-weight:600; cursor:pointer; user-select:none;
-  }
-  button:hover{background:#f8fafc;}
-  #distance-main {
-    margin-top:8px;
-    font-size:16px;
-    color:#2563eb;
-    font-weight:600;
-    letter-spacing:1px;
-  }
-  #obstacle-msg{
-    color: #b91c1c;
-    font-weight: 700;
-    margin-top: 12px;
-    font-size: 18px;
-    min-height: 24px;
-  }
-  .panel {
-    border:1px solid var(--line); border-radius:12px; padding:14px; background:#fafbfd;
-    min-height:210px; margin-top:18px;
-  }
-  h3 {margin-top:0; font-size:16px; color:#111827;}
-  .log {
-    background:#fff; border:1px solid var(--line); border-radius:8px; padding:10px;
-    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-    height:190px; overflow:auto; font-size:13px; line-height:1.4;
-  }
-</style>
+  <meta charset="utf-8" />
+  <title>Statut du robot autonome</title>
+  <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root{
+      --bg: #f3f6fb;
+      --card: #fff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --line: #e5e7eb;
+      --badge: #fde68a;
+      --badge-text: #7a5b00;
+      --shadow: 0 10px 24px rgba(0,0,0,.08);
+      --radius: 16px;
+    }
+    *{box-sizing:border-box;}
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial;
+      background: radial-gradient(1200px 800px at 50% -200px, #e8eefc 0%, transparent 60%), var(--bg);
+      color: var(--text);
+    }
+    .container{max-width:980px; margin:48px auto; padding:0 16px;}
+    .card{
+      background: var(--card);
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding:20px 22px;
+    }
+    .header{display:flex; align-items:center; gap:12px; margin-bottom:10px;}
+    .logo{
+      width:38px; height:38px; border-radius:12px;
+      background:#e9f0ff; display:grid; place-items:center;
+      font-weight:700; color:#4164ff;
+    }
+    h1{font-size:20px; margin:0;}
+    .row{display:flex; gap:16px; flex-wrap:wrap; align-items:center; justify-content:space-between; margin-bottom:10px;}
+    .badge{
+      display:inline-block; border-radius:12px; padding:28px 40px; font-weight:700; font-size:30px; user-select:none;
+      background: var(--badge); color: var(--badge-text); transition: background 0.2s, color 0.2s;
+    }
+    .actions{display:flex; gap:10px;}
+    button{
+      background:#fff; border:1px solid var(--line); border-radius:10px;
+      padding:10px 16px; font-weight:600; cursor:pointer; user-select:none;
+    }
+    button:hover{background:#f8fafc;}
+    #distance-main {
+      margin-top:8px;
+      font-size:16px;
+      color:#2563eb;
+      font-weight:600;
+      letter-spacing:1px;
+    }
+    #obstacle-msg{
+      color: #b91c1c;
+      font-weight: 700;
+      margin-top: 12px;
+      font-size: 18px;
+      min-height: 24px;
+    }
+    .panel {
+      border:1px solid var(--line); border-radius:12px; padding:14px; background:#fafbfd;
+      min-height:210px; margin-top:18px;
+    }
+    h3 {margin-top:0; font-size:16px; color:#111827;}
+    .log {
+      background:#fff; border:1px solid var(--line); border-radius:8px; padding:10px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      height:190px; overflow:auto; font-size:13px; line-height:1.4;
+    }
+  </style>
 </head>
 <body>
-<div class="container">
-  <div class="card">
-    <div class="row">
-      <div class="header">
-        <div class="logo">R</div>
-        <h1>Statut du robot autonome</h1>
+  <div class="container">
+    <div class="card">
+      <div class="row">
+        <div class="header">
+          <div class="logo">R</div>
+          <h1>Statut du robot autonome</h1>
+        </div>
+        <div class="actions">
+          <button onclick="fetch('/start').then(()=>console.log('Start envoyé'))">Start</button>
+          <button onclick="fetch('/stop').then(()=>console.log('Stop envoyé'))">Stop</button>
+        </div>
       </div>
-      <div class="actions">
-        <button onclick="fetch('/start').then(()=>console.log('Start envoyé'))">Start</button>
-        <button onclick="fetch('/stop').then(()=>console.log('Stop envoyé'))">Stop</button>
-      </div>
-    </div>
-    <div class="row" style="justify-content:center;">
-      <div style="display:flex;flex-direction:column;align-items:center;">
+      <div class="row" style="justify-content:center;">
+       <div style="display:flex;flex-direction:column;align-items:center;">
         <div class="badge" id="badge">—</div>
         <div id="distance-main"></div>
+        <div id="vision-label" style="margin-top:12px;color:#00bcd4;font-size:20px;font-weight:600;"></div>
+       </div>
+      </div>
+      <div id="obstacle-msg"></div>
+      <div class="panel">
+        <h3>Log</h3>
+        <div id="log" class="log">(vide)</div>
       </div>
     </div>
-    <div id="obstacle-msg"></div>
-    <div class="panel">
-      <h3>Log</h3>
-      <div id="log" class="log">(vide)</div>
-    </div>
   </div>
-</div>
-<script>
-function colorize(etat){
-  const s = (etat||"").toLowerCase();
-  if (s.includes("stop"))       return {bg:"#fca5a5", fg:"#991b1b"};
-  if (s.includes("obstacle"))   return {bg:"#fde68a", fg:"#7a5b00"};
-  if (s.includes("avance"))     return {bg:"#d1fae5", fg:"#065f46"};
-  if (s.includes("recul"))      return {bg:"#dbeafe", fg:"#1e3a8a"};
-  if (s.includes("tourne"))     return {bg:"#f3e8ff", fg:"#6b21a8"};
-  if (s.includes("freine"))     return {bg:"#fef3c7", fg:"#92400e"};
-  return {bg:"#f3f4f6", fg:"#374151"};
-}
-let busy = false;
-async function update(){
-  if (busy) return;
-  busy = true;
-  try{
-    const r = await fetch('/status?_=' + Date.now(), { cache: 'no-store' });
-    if(!r.ok) throw new Error('HTTP '+r.status);
-    const data = await r.json();
-    // Badge état principal
-    const elBadge = document.getElementById('badge');
-    const c = colorize(data.etat);
-    elBadge.style.background = c.bg;
-    elBadge.style.color = c.fg;
-    elBadge.textContent = data.etat;
-    // Affichage distance dynamique
-    document.getElementById('distance-main').textContent =
-      (typeof data.distance === "number" ? ("Distance : " + data.distance.toFixed(1) + " cm") : "");
-    document.getElementById('obstacle-msg').textContent = data.obstacle_message || '';
-    let out = '';
-    (data.log||[]).forEach(item=>{
-      const t = new Date(item[0]*1000).toLocaleTimeString();
-      out += `[${t}] ${item[1]}<br>`;
-    });
-    document.getElementById('log').innerHTML = out || '(vide)';
-  }catch(e){
-    document.getElementById('badge').textContent = "Erreur";
-    document.getElementById('log').textContent = "Impossible de joindre le serveur: " + e;
-  }finally{
-    busy = false;
-  }
-}
-setInterval(update, 200);
-update();
-</script>
+  <script>
+    function colorize(etat){
+      const s = (etat||"").toLowerCase();
+      if (s.includes("stop"))       return {bg:"#fca5a5", fg:"#991b1b"};
+      if (s.includes("obstacle"))   return {bg:"#fde68a", fg:"#7a5b00"};
+      if (s.includes("avance"))     return {bg:"#d1fae5", fg:"#065f46"};
+      if (s.includes("recul"))      return {bg:"#dbeafe", fg:"#1e3a8a"};
+      if (s.includes("tourne"))     return {bg:"#f3e8ff", fg:"#6b21a8"};
+      if (s.includes("freine"))     return {bg:"#fef3c7", fg:"#92400e"};
+      return {bg:"#f3f4f6", fg:"#374151"};
+    }
+
+    let busy = false;
+    async function update(){
+      if (busy) return;
+      busy = true;
+      try{
+        const r = await fetch('/status?_=' + Date.now(), { cache: 'no-store' });
+        if(!r.ok) throw new Error('HTTP '+r.status);
+        const data = await r.json();
+
+        // Badge état principal
+        const elBadge = document.getElementById('badge');
+        const c = colorize(data.etat);
+        elBadge.style.background = c.bg;
+        elBadge.style.color = c.fg;
+        elBadge.textContent = data.etat;
+
+        // Affichage distance dynamique
+        document.getElementById('distance-main').textContent =
+          (typeof data.distance === "number" ? ("Distance : " + data.distance.toFixed(1) + " cm") : "");
+        document.getElementById('obstacle-msg').textContent = data.obstacle_message || '';
+        document.getElementById('vision-label').textContent = "Vision : " + (data.vision_label || "—");
+
+        let out = '';
+        (data.log||[]).forEach(item=>{
+          const t = new Date(item[0]*1000).toLocaleTimeString();
+          out += `[${t}] ${item[1]}<br>`;
+        });
+        document.getElementById('log').innerHTML = out || '(vide)';
+
+      }catch(e){
+        document.getElementById('badge').textContent = "Erreur";
+        document.getElementById('log').textContent = "Impossible de joindre le serveur: " + e;
+      }finally{
+        busy = false;
+      }
+    }
+
+    setInterval(update, 200);
+    update();
+  </script>
 </body>
 </html>
