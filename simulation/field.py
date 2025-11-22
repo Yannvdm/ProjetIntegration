@@ -1,4 +1,5 @@
 import matplotlib.patches as patches
+import matplotlib.pyplot as plt
 import constants as c
 
 
@@ -7,7 +8,7 @@ class EurobotField:
         self.longueur = c.TABLE_LONGUEUR
         self.largeur = c.TABLE_LARGEUR
 
-    def draw_static_elements(self, ax):
+    def draw_static_elements(self, ax, image_path=None):
         """Dessine les éléments fixes du plateau sur le graphique ax"""
 
         # Configuration de l'affichage
@@ -20,23 +21,31 @@ class EurobotField:
                                   zorder=0)
         ax.add_patch(table)
 
-        # Zone de départ BLEUE (Haut Gauche)
-        start_blue = patches.Rectangle((0,
-                                        self.largeur - c.START_ZONE_LONGUEUR),
-                                       c.START_ZONE_LARGEUR,
+        if image_path:
+            try:
+                img = plt.imread(image_path)
+                ax.imshow(img, extent=[0, self.longueur, 0, self.largeur],
+                          zorder=0)
+            except FileNotFoundError:
+                print(f"Erreur : Image '{image_path}' introuvable.")
+
+        # Zone de départ JAUNE (Haut Gauche)
+        start_jaune = patches.Rectangle((0,
+                                        self.largeur - c.START_ZONE_LARGEUR),
+                                        c.START_ZONE_LONGUEUR,
+                                        c.START_ZONE_LARGEUR,
+                                        color=c.COLOR_YELLOW, alpha=0.3,
+                                        label="Départ jaune")
+        ax.add_patch(start_jaune)
+
+        # Zone de départ BLEU (Haut Droite)
+        start_bleu = patches.Rectangle((self.longueur - c.START_ZONE_LONGUEUR,
+                                        self.largeur - c.START_ZONE_LARGEUR),
                                        c.START_ZONE_LONGUEUR,
+                                       c.START_ZONE_LARGEUR,
                                        color=c.COLOR_BLUE, alpha=0.3,
                                        label="Départ Bleu")
-        ax.add_patch(start_blue)
-
-        # Zone de départ JAUNE (Haut Droite)
-        start_yellow = patches.Rectangle((self.longueur - c.START_ZONE_LARGEUR,
-                                         self.largeur - c.START_ZONE_LONGUEUR),
-                                         c.START_ZONE_LARGEUR,
-                                         c.START_ZONE_LONGUEUR,
-                                         color=c.COLOR_YELLOW, alpha=0.3,
-                                         label="Départ Jaune")
-        ax.add_patch(start_yellow)
+        ax.add_patch(start_bleu)
 
         # Le Grenier
         # Centré en X : (3000 - 1800) / 2 = 600
