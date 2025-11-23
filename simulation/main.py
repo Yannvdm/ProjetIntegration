@@ -1,8 +1,8 @@
-# main.py
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from field import EurobotField
 import map_points
+import robot
 import os
 
 
@@ -15,12 +15,12 @@ def run_visualization():
     terrain = EurobotField()
     terrain.draw_static_elements(ax, image_path=chemin_image)
 
-    # Génération des zones  
+    # Génération des zones
     reseau = map_points.generer_graphe()
     print("Simulation lancée.")
 
     for zone in reseau:
-        rect = patches.Rectangle((zone.x_coin, zone.y_coin), 
+        rect = patches.Rectangle((zone.x_coin, zone.y_coin),
                                  zone.largeur, zone.profondeur,
                                  linewidth=0,
                                  edgecolor='none',
@@ -29,6 +29,11 @@ def run_visualization():
                                  zorder=10)
         ax.add_patch(rect)
 
+    robot_bleu = robot.Robot(x=2800, y=1800, theta=180, color='blue')
+    robot_bleu.draw(ax)
+
+    robot_jaune = robot.Robot(x=200, y=1800, theta=0, color='#F7B500')
+    robot_jaune.draw(ax)
     plt.title("Eurobot 2026 - Simulation")
     plt.grid(True, linestyle=':', alpha=0.4)
     plt.xlabel("X (mm)")
