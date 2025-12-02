@@ -30,8 +30,8 @@ enB.freq(1000)
 # Capteurs
 TRIG = Pin(7, Pin.OUT);
 ECHO = Pin(8, Pin.IN)
-IR_GAUCHE = Pin(16, Pin.IN);
-IR_DROIT = Pin(17, Pin.IN)
+IR_GAUCHE = Pin(10, Pin.IN);
+IR_DROIT = Pin(11, Pin.IN)
 LED = Pin(25, Pin.OUT)
 
 # Variables globales
@@ -98,9 +98,9 @@ def lire_ligne():
     g = IR_GAUCHE.value();
     d = IR_DROIT.value()
     # 1=Noir, 0=Blanc
-    if g == 1 and d == 1: return "CENTRE"
-    if g == 1 and d == 0: return "GAUCHE"
-    if g == 0 and d == 1: return "DROITE"
+    if g == 0 and d == 0: return "CENTRE"
+    if g == 0 and d == 1: return "GAUCHE"
+    if g == 1 and d == 0: return "DROITE"
     return "PERDU"
 
 
@@ -240,5 +240,6 @@ while True:
     if tick_log > 10:
         send_mqtt("Suivi Ligne", manoeuvre, dist, False)
         tick_log = 0
+
 
     time.sleep(0.05)
