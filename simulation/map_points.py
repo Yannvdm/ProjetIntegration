@@ -13,6 +13,7 @@ class Zone:
         self.profondeur = 0
         self.couleur = ''
         self.type = ''
+        self.nb_caisses = 0
 
     @property
     def centre(self):
@@ -44,6 +45,7 @@ class Ramassage(Zone):
         self.profondeur = c.ZONE_RAMASSAGE_PROFONDEUR
         self.couleur = 'red'
         self.type = 'ramassage'
+        self.nb_caisses = 4
 
 
 def generer_graphe():

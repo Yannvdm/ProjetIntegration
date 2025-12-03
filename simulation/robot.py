@@ -1,44 +1,101 @@
 import matplotlib.patches as patches
 import matplotlib.transforms as transforms
-import numpy as np
-
+import math
+import random
 
 class Robot:
-    def __init__(self, x, y, theta=0, color='black'):
+    def __init__(self, x, y, theta=0, color='black', speed=300, speed_noise=0):
         self.x = x
         self.y = y
         self.theta = theta
         self.largeur = 300
         self.longueur = 300
         self.color = color
+        self.base_speed = speed 
+        self.speed_noise = speed_noise # Incertitude vitesse
+        
+        self.patch_rect = None
+        self.patch_arrow = None
 
     def draw(self, ax):
-        rect = patches.Rectangle(
+        self.patch_rect = patches.Rectangle(
             (-self.largeur / 2, -self.longueur / 2),
-            self.largeur,
-            self.longueur,
-            facecolor='white',
-            edgecolor=self.color,
-            linewidth=2,
-            zorder=20
+            self.largeur, self.longueur,
+            facecolor='white', edgecolor=self.color, linewidth=2, zorder=20
         )
-
-        t = transforms.Affine2D().rotate_deg(self.theta).translate(self.x,
-                                                                   self.y)
-        rect.set_transform(t + ax.transData)
-        ax.add_patch(rect)
-
-        arrow_len = self.longueur / 2
-        rad = np.deg2rad(self.theta)
-        end_x = self.x + arrow_len * np.cos(rad)
-        end_y = self.y + arrow_len * np.sin(rad)
-
-        ax.arrow(
-            self.x, self.y,
-            end_x - self.x, end_y - self.y,
-            head_width=30,
-            head_length=30,
-            fc='red',
-            ec='red',
-            zorder=21
+        self.patch_arrow = patches.FancyArrow(
+            0, 0, self.longueur/2, 0, 
+            width=10, head_width=30, head_length=30, 
+            color='red', zorder=21
         )
+        ax.add_patch(self.patch_rect)
+        ax.add_patch(self.patch_arrow)
+        self.update_graphics(ax)
+
+    def update_graphics(self, ax):
+        t = transforms.Affine2D().rotate_deg(self.theta).translate(self.x, self.y)
+        self.patch_rect.set_transform(t + ax.transData)
+
+    def move_to(self, target_x, target_y, dt):
+        """Avance vers la cible avec vitesse variable (bruit)."""
+        dx = target_x - self.x
+        dy = target_y - self.y
+        dist = math.hypot(dx, dy)
+
+        if dist < 10: return True
+
+        target_theta = math.degrees(math.atan2(dy, dx))
+        self.theta = target_theta
+
+        # Application du bruit sur la vitesse
+        current_speed = self.base_speed + random.uniform(-self.speed_noise, self.speed_noise)
+        if current_speed < 0: current_speed = 0 # Pas de marche arrière accidentelle
+
+        step = current_speed * dt
+        if step > dist: step = dist
+            
+        self.x += step * math.cos(math.radians(self.theta))
+        self.y += step * math.sin(math.radians(self.theta))
+        
+        return False
+
+    def decide_strategy(self, zones, risk_percent):
+        """Décide Nid vs Garde-Manger."""
+        tirage = random.uniform(0, 100)
+        print(f"tirage = {tirage} vs risk = {risk_percent}")
+        # Si audace (tirage < risk), on va au GM le plus proche
+        if tirage <= risk_percent:
+            return self.get_nearest_zone(zones, 'gm')
+        else:
+            # Sécurité : Retour au Nid
+            target_color = "Bleu" if self.color == "blue" else "Jaune"
+            for z in zones:
+                if z.type == 'nid' and target_color in z.nom:
+                    return z
+        return None
+
+    def get_nearest_zone(self, zones, type_filter):
+        """Trouve la zone du type donné la plus proche."""
+        min_dist = float('inf')
+        nearest = None
+        for z in zones:
+            if z.type == type_filter:
+                zx, zy = z.centre
+                d = math.hypot(zx - self.x, zy - self.y)
+                if d < min_dist:
+                    min_dist = d
+                    nearest = z
+        return nearest
+
+    def get_nearest_pickup_with_stock(self, zones):
+        """Cherche la zone de ramassage la plus proche QUI A ENCORE DES CAISSES."""
+        min_dist = float('inf')
+        nearest = None
+        for z in zones:
+            if z.type == 'ramassage' and z.nb_caisses > 0:
+                zx, zy = z.centre
+                d = math.hypot(zx - self.x, zy - self.y)
+                if d < min_dist:
+                    min_dist = d
+                    nearest = z
+        return nearest
