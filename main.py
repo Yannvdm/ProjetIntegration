@@ -7,17 +7,19 @@ import ujson
 # --- CONFIGURATION WIFI ---
 SSID = "CharlesRed13"
 PASS = "123456789"
-MQTT_SERV = "192.168.137.101"  # Ton IP actuelle
+MQTT_SERV = "192.168.137.101"
 MQTT_TOPIC_STATUS = "robot/status"
 CLIENT_ID = "pico_robot"
 
-# --- REGLAGES MOTEURS (VITESSE ESCARGOT) ---
-# On descend très bas. Si le robot "siffle" mais ne bouge pas après le démarrage,
-# augmente ces valeurs par pas de 1000 (ex: 14000, 15000).
-VITESSE_BASE = 13000  # ~20% de puissance
-VITESSE_TOURNE = 16000  # Un peu plus pour tourner
+# --- REGLAGES MOTEURS & LOGIQUE ---
+VITESSE_BASE = 14000      # Vitesse croisière
+VITESSE_VIRAGE = 18000    # Vitesse forte pour le virage
 
-# --- PINS ---
+# IMPORTANT : Temps du virage aveugle (pour faire ~20 degrés)
+# 0.25 = 1/4 de seconde. Ajuste cette valeur !
+DUREE_VIRAGE = 0.25       
+
+# --- PINS (Corrigés selon ton test) ---
 enA = PWM(Pin(0));
 in3 = Pin(2, Pin.OUT);
 in4 = Pin(1, Pin.OUT)
@@ -27,30 +29,38 @@ in2 = Pin(6, Pin.OUT)
 enA.freq(1000);
 enB.freq(1000)
 
-# Capteurs
+# Capteurs Ultrasons (Réactivés)
 TRIG = Pin(7, Pin.OUT);
 ECHO = Pin(8, Pin.IN)
+
+# Capteurs IR (Corrigés : 10 et 11)
 IR_GAUCHE = Pin(10, Pin.IN);
 IR_DROIT = Pin(11, Pin.IN)
+
 LED = Pin(25, Pin.OUT)
 
 # Variables globales
 action_caisse_type = None
-last_dir_A = 0;
-last_dir_B = 0
-last_pwm_A = 0;
-last_pwm_B = 0  # Pour savoir si on était à l'arrêt
+last_dir_A = 0; last_dir_B = 0
+last_pwm_A = 0; last_pwm_B = 0
 
 # --- CONNEXION ---
 wlan = network.WLAN(network.STA_IF)
 wlan.active(True)
 wlan.connect(SSID, PASS)
 print("Connexion WiFi...")
-while not wlan.isconnected():
+# Timeout pour ne pas bloquer si pas de wifi
+timeout = 0
+while not wlan.isconnected() and timeout < 20:
     LED.toggle();
     time.sleep(0.2)
-LED.value(1)
-print("Connecté IP:", wlan.ifconfig()[0])
+    timeout += 1
+
+if wlan.isconnected():
+    LED.value(1)
+    print("Connecté IP:", wlan.ifconfig()[0])
+else:
+    print("Mode Hors Ligne (Pas de WiFi)")
 
 client = MQTTClient(CLIENT_ID, MQTT_SERV)
 
@@ -63,10 +73,11 @@ def callback(topic, msg):
 
 
 try:
-    client.connect()
-    client.set_callback(callback)
-    client.subscribe(b"robot/vision_event")
-    print("MQTT OK")
+    if wlan.isconnected():
+        client.connect()
+        client.set_callback(callback)
+        client.subscribe(b"robot/vision_event")
+        print("MQTT OK")
 except Exception as e:
     print("Err MQTT", e)
 
@@ -74,6 +85,7 @@ except Exception as e:
 # --- FONCTIONS ---
 
 def send_mqtt(etat, manoeuvre, dist=0, obs=False):
+    if not wlan.isconnected(): return
     msg = ujson.dumps({"etat": etat, "manoeuvre": manoeuvre, "distance": round(dist, 1), "obstacle": obs})
     try:
         client.publish(MQTT_TOPIC_STATUS, msg)
@@ -94,86 +106,51 @@ def get_distance():
         return 999
 
 
-def lire_ligne():
-    g = IR_GAUCHE.value();
-    d = IR_DROIT.value()
-    # 1=Noir, 0=Blanc
-    if g == 0 and d == 0: return "CENTRE"
-    if g == 0 and d == 1: return "GAUCHE"
-    if g == 1 and d == 0: return "DROITE"
-    return "PERDU"
-
-
-# --- PILOTAGE AVEC KICKSTART ---
+# --- PILOTAGE ---
 
 def stop_moteurs():
     global last_dir_A, last_dir_B, last_pwm_A, last_pwm_B
-    enA.duty_u16(0);
-    enB.duty_u16(0)
-    in1.low();
-    in2.low();
-    in3.low();
-    in4.low()
-    last_dir_A = 0;
-    last_dir_B = 0
-    last_pwm_A = 0;
-    last_pwm_B = 0
-    time.sleep(0.05)
+    enA.duty_u16(0); enB.duty_u16(0)
+    in1.low(); in2.low(); in3.low(); in4.low()
+    last_dir_A = 0; last_dir_B = 0
+    last_pwm_A = 0; last_pwm_B = 0
 
 
 def piloter(vg, vd):
     global last_dir_A, last_dir_B, last_pwm_A, last_pwm_B
 
-    # Directions
     da = 1 if vg > 0 else (-1 if vg < 0 else 0)
     db = 1 if vd > 0 else (-1 if vd < 0 else 0)
 
-    # Protection inversion
     if (da != 0 and da != last_dir_A) or (db != 0 and db != last_dir_B):
-        enA.duty_u16(0);
-        enB.duty_u16(0);
-        time.sleep(0.05)
+        enA.duty_u16(0); enB.duty_u16(0)
 
-    # Configuration des pins de direction
-    if vg > 0:
-        in3.high(); in4.low()
-    elif vg < 0:
-        in3.low(); in4.high()
-    else:
-        in3.low(); in4.low()
+    if vg > 0: in3.high(); in4.low()
+    elif vg < 0: in3.low(); in4.high()
+    else: in3.low(); in4.low()
 
-    if vd > 0:
-        in1.high(); in2.low()
-    elif vd < 0:
-        in1.low(); in2.high()
-    else:
-        in1.low(); in2.low()
+    if vd > 0: in1.high(); in2.low()
+    elif vd < 0: in1.low(); in2.high()
+    else: in1.low(); in2.low()
 
     target_pwm_A = abs(int(vg))
     target_pwm_B = abs(int(vd))
 
-    # --- LE KICKSTART ---
-    # Si on demande de la vitesse alors qu'on était à l'arrêt (ou presque)
-    # On donne un coup de boost bref pour lancer le moteur
+    # Kickstart
     if (target_pwm_A > 0 and last_pwm_A == 0) or (target_pwm_B > 0 and last_pwm_B == 0):
-        # On applique 60% de puissance pendant un instant très court
-        enA.duty_u16(40000)
-        enB.duty_u16(40000)
-        time.sleep(0.05)  # 50 millisecondes de boost
+        enA.duty_u16(40000); enB.duty_u16(40000)
+        time.sleep(0.05)
 
-    # Ensuite on applique la vitesse (lente) demandée
     enA.duty_u16(target_pwm_A)
     enB.duty_u16(target_pwm_B)
 
-    last_dir_A = da;
-    last_dir_B = db
-    last_pwm_A = target_pwm_A;
-    last_pwm_B = target_pwm_B
+    last_dir_A = da; last_dir_B = db
+    last_pwm_A = target_pwm_A; last_pwm_B = target_pwm_B
 
 
 # --- MAIN ---
 
-print("Go.")
+print("Go: Robot Complet (Nouvelle Logique IR).")
 stop_moteurs()
 tick_log = 0
 
@@ -185,61 +162,80 @@ while True:
 
     dist = get_distance()
 
-    # 1. ACTION CAISSE
+    # 1. ACTION CAISSE (Priorité Vision)
     if action_caisse_type:
         stop_moteurs()
         if action_caisse_type == "NOIRE":
             print("Action: Noire")
-            send_mqtt("Action", "Avance 1s", dist, False)
+            send_mqtt("Action", "Avance/Recul", dist, False)
             piloter(VITESSE_BASE, VITESSE_BASE)
             time.sleep(1.0)
             stop_moteurs()
-            send_mqtt("Action", "Recul 1s", dist, False)
+            time.sleep(0.5)
             piloter(-VITESSE_BASE, -VITESSE_BASE)
             time.sleep(1.0)
         elif action_caisse_type == "COULEUR":
             print("Action: Couleur")
-            send_mqtt("Action", "Bras 3s", dist, False)
-            for _ in range(6): LED.toggle(); time.sleep(0.5)
+            send_mqtt("Action", "Bras Simulé", dist, False)
+            for _ in range(6): LED.toggle(); time.sleep(0.3)
 
         action_caisse_type = None
         stop_moteurs()
-        send_mqtt("Auto", "Reprise", dist, False)
+        time.sleep(0.5)
         continue
 
-    # 2. OBSTACLE
+    # 2. OBSTACLE (Ultrasons)
     if dist < 20:
         stop_moteurs()
-        send_mqtt("Urgence", "Obstacle", dist, True)
+        send_mqtt("Urgence", "Evitement", dist, True)
+        print("Obstacle !")
         piloter(-VITESSE_BASE, -VITESSE_BASE)
         time.sleep(0.5)
-        piloter(VITESSE_TOURNE, -VITESSE_TOURNE)
-        time.sleep(0.8)
+        piloter(VITESSE_VIRAGE, -VITESSE_VIRAGE)
+        time.sleep(0.6)
         stop_moteurs()
         continue
 
-    # 3. SUIVI LIGNE
-    etat_ligne = lire_ligne()
+    # 3. SUIVI LIGNE (NOUVELLE LOGIQUE BLIND TURN)
+    g = IR_GAUCHE.value()
+    d = IR_DROIT.value()
+    manoeuvre = ""
 
-    if etat_ligne == "CENTRE":
+    # Cas 1: Ligne au centre (Tout va bien)
+    if g == 0 and d == 0:
         piloter(VITESSE_BASE, VITESSE_BASE)
         manoeuvre = "Tout droit"
-    elif etat_ligne == "GAUCHE":
-        # Pivote doucement
-        piloter(0, VITESSE_TOURNE)
-        manoeuvre = "Gauche"
-    elif etat_ligne == "DROITE":
-        piloter(VITESSE_TOURNE, 0)
-        manoeuvre = "Droite"
+        # Petite pause standard
+        time.sleep(0.01)
+
+    # Cas 2: Touche à Gauche -> Virage FORCÉ
+    elif g == 1 and d == 0:
+        manoeuvre = "Virage Force G"
+        piloter(-VITESSE_VIRAGE, VITESSE_VIRAGE)
+        # On bloque le code ici pour forcer le virage
+        time.sleep(DUREE_VIRAGE)
+
+    # Cas 3: Touche à Droite -> Virage FORCÉ
+    elif g == 0 and d == 1:
+        manoeuvre = "Virage Force D"
+        piloter(VITESSE_VIRAGE, -VITESSE_VIRAGE)
+        # On bloque le code ici pour forcer le virage
+        time.sleep(DUREE_VIRAGE)
+
+    # Cas 4: Intersection ou Stop
+    elif g == 1 and d == 1:
+        stop_moteurs()
+        manoeuvre = "Stop Ligne"
+        time.sleep(0.1)
+    
     else:
-        # Recherche
+        # Perdu ? On continue tout droit ou on s'arrête
         piloter(VITESSE_BASE, VITESSE_BASE)
-        manoeuvre = "Cherche"
+        manoeuvre = "Perdu/Cherche"
+        time.sleep(0.01)
 
+    # Logs MQTT (pour debug)
     tick_log += 1
-    if tick_log > 10:
-        send_mqtt("Suivi Ligne", manoeuvre, dist, False)
+    if tick_log > 10: 
+        send_mqtt("Suivi", manoeuvre, dist, False)
         tick_log = 0
-
-
-    time.sleep(0.05)
