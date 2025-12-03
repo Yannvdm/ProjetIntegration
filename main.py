@@ -17,7 +17,7 @@ VITESSE_VIRAGE = 18000    # Vitesse forte pour le virage
 
 # IMPORTANT : Temps du virage aveugle (pour faire ~20 degrés)
 # 0.25 = 1/4 de seconde. Ajuste cette valeur !
-DUREE_VIRAGE = 0.25       
+DUREE_VIRAGE = 0.35
 
 # --- PINS (Corrigés selon ton test) ---
 enA = PWM(Pin(0));
