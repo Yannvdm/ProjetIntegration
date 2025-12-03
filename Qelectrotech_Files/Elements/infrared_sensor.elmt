@@ -1,0 +1,15 @@
+<definition type="element" width="30" height="30" version="0.90" hotspot_y="9" link_type="simple" hotspot_x="10">
+    <uuid uuid="{89c915c4-3563-4bb6-a429-f2ea9b183fbb}"/>
+    <names/>
+    <elementInformations/>
+    <informations></informations>
+    <description>
+        <rect ry="0" antialias="false" width="18" height="18" y="0" x="-4" style="line-style:normal;line-weight:normal;filling:none;color:black" rx="0"/>
+        <text y="1" x="8" text="VCC" font="Sans Serif,4,-1,5,50,0,0,0,0,0" rotation="90" color="#000000"/>
+        <text y="1" x="3" text="GND" font="Sans Serif,4,-1,5,50,0,0,0,0,0" rotation="90" color="#000000"/>
+        <text y="1" x="-2" text="OUT" font="Sans Serif,4,-1,5,50,0,0,0,0,0" rotation="90" color="#000000"/>
+        <terminal type="Generic" y="-4" x="0" uuid="{63efce9a-75a9-4411-9062-f7d5b1d5b4a1}" name="OUT" orientation="n"/>
+        <terminal type="Generic" y="-4" x="5" uuid="{2f5c28c6-4e3f-4258-a733-9e3900bce675}" name="GND" orientation="n"/>
+        <terminal type="Generic" y="-4" x="10" uuid="{2119aa9d-cc44-4c4a-bed2-ac23071be525}" name="OUT" orientation="n"/>
+    </description>
+</definition>

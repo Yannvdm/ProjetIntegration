@@ -1,0 +1,45 @@
+<definition type="element" width="80" height="90" version="0.90" hotspot_y="49" link_type="simple" hotspot_x="45">
+    <uuid uuid="{4b00d9f3-0f4c-4580-a4b4-1526745f0e4d}"/>
+    <names/>
+    <elementInformations/>
+    <informations></informations>
+    <description>
+        <text y="-39" x="-35" text="GND" font="Sans Serif,4,-1,5,50,0,0,0,0,0" rotation="90" color="#000000"/>
+        <text y="-39" x="-30" text="IN1" font="Sans Serif,4,-1,5,50,0,0,0,0,0" rotation="90" color="#000000"/>
+        <text y="-39" x="-25" text="IN2" font="Sans Serif,4,-1,5,50,0,0,0,0,0" rotation="90" color="#000000"/>
+        <text y="-39" x="-20" text="IN3" font="Sans Serif,4,-1,5,50,0,0,0,0,0" rotation="90" color="#000000"/>
+        <text y="-39" x="-15" text="IN4" font="Sans Serif,4,-1,5,50,0,0,0,0,0" rotation="90" color="#000000"/>
+        <text y="29" x="-37" text="VCC" font="Sans Serif,3,-1,5,50,0,0,0,0,0" rotation="270" color="#000000"/>
+        <rect ry="0" antialias="false" width="71" height="70" y="-40" x="-41" style="line-style:normal;line-weight:normal;filling:none;color:black" rx="0"/>
+        <text y="29" x="-18" text="VCC" font="Sans Serif,3,-1,5,50,0,0,0,0,0" rotation="270" color="#000000"/>
+        <text y="29" x="2" text="VCC" font="Sans Serif,3,-1,5,50,0,0,0,0,0" rotation="270" color="#000000"/>
+        <text y="29" x="21" text="VCC" font="Sans Serif,3,-1,5,50,0,0,0,0,0" rotation="270" color="#000000"/>
+        <text y="-39" x="-40" text="VCC" font="Sans Serif,4,-1,5,50,0,0,0,0,0" rotation="90" color="#000000"/>
+        <text y="29" x="-33" text="GND" font="Sans Serif,3,-1,5,50,0,0,0,0,0" rotation="270" color="#000000"/>
+        <text y="29" x="-14" text="GND" font="Sans Serif,3,-1,5,50,0,0,0,0,0" rotation="270" color="#000000"/>
+        <text y="29" x="25" text="GND" font="Sans Serif,3,-1,5,50,0,0,0,0,0" rotation="270" color="#000000"/>
+        <text y="29" x="6" text="GND" font="Sans Serif,3,-1,5,50,0,0,0,0,0" rotation="270" color="#000000"/>
+        <text y="29" x="29" text="IN4" font="Sans Serif,3,-1,5,50,0,0,0,0,0" rotation="270" color="#000000"/>
+        <text y="29" x="10" text="IN3" font="Sans Serif,3,-1,5,50,0,0,0,0,0" rotation="270" color="#000000"/>
+        <text y="29" x="-10" text="IN2" font="Sans Serif,3,-1,5,50,0,0,0,0,0" rotation="270" color="#000000"/>
+        <text y="29" x="-29" text="IN1" font="Sans Serif,3,-1,5,50,0,0,0,0,0" rotation="270" color="#000000"/>
+        <terminal type="Generic" y="34" x="5" uuid="{4b673680-3c3b-4db1-86a5-a8b7b5dc9498}" name="R11_GND" orientation="s"/>
+        <terminal type="Generic" y="34" x="25" uuid="{7bde88dd-9ac3-403a-9c40-8cca2ce41f6f}" name="R12_GND" orientation="s"/>
+        <terminal type="Generic" y="34" x="-30" uuid="{f2ba8932-9d73-4e44-8777-f23c18264a9d}" name="R9_IN1" orientation="s"/>
+        <terminal type="Generic" y="34" x="-40" uuid="{5f07c482-38b4-45c5-9599-301dc79df928}" name="R9_VCC" orientation="s"/>
+        <terminal type="Generic" y="34" x="-20" uuid="{d1150258-8008-4e7a-b200-6794ea306b2b}" name="R10_VCC" orientation="s"/>
+        <terminal type="Generic" y="-44" x="-34" uuid="{67e269ac-fa4b-4f20-826d-5676fcbea35c}" name="GND" orientation="n"/>
+        <terminal type="Generic" y="34" x="10" uuid="{183b7d0f-e583-45e8-92d2-d2b1b2437a7b}" name="R11_IN3" orientation="s"/>
+        <terminal type="Generic" y="34" x="-10" uuid="{8598f0d1-1d34-4962-9755-fd95b8ddd374}" name="R10_IN2" orientation="s"/>
+        <terminal type="Generic" y="34" x="-15" uuid="{6e586970-ba45-4a24-b7a2-8ebf5dce3b84}" name="R10_GND" orientation="s"/>
+        <terminal type="Generic" y="34" x="-35" uuid="{6f460ab7-daa0-4d4d-b43e-4a22b9386023}" name="R9_GND" orientation="s"/>
+        <terminal type="Generic" y="34" x="20" uuid="{9b37648b-6fe5-4139-8408-a1bb9e87fc94}" name="R12_VCC" orientation="s"/>
+        <terminal type="Generic" y="34" x="30" uuid="{2740f0e5-1186-4015-ba99-6d46de784f3f}" name="R12_IN4" orientation="s"/>
+        <terminal type="Generic" y="-44" x="-29" uuid="{5eb64350-be7e-4fba-a0ce-8dda98e406ad}" name="IN1" orientation="n"/>
+        <terminal type="Generic" y="-44" x="-19" uuid="{6679220a-d0ff-4a1c-bf64-549bf2fd611b}" name="IN3" orientation="n"/>
+        <terminal type="Generic" y="34" x="0" uuid="{3e76e0f4-3529-44af-a0d9-34215328fdf4}" name="R11_VCC" orientation="s"/>
+        <terminal type="Generic" y="-44" x="-39" uuid="{e35f028c-121c-4b9c-98d2-a071bd050f63}" name="VCC" orientation="n"/>
+        <terminal type="Generic" y="-44" x="-14" uuid="{1f013265-a76b-479a-a4bc-bf480548e7eb}" name="IN4" orientation="n"/>
+        <terminal type="Generic" y="-44" x="-24" uuid="{56ac9028-01a8-42ae-bec9-6135b24b7d9d}" name="IN2" orientation="n"/>
+    </description>
+</definition>
