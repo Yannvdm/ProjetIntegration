@@ -1,0 +1,37 @@
+<definition height="50" type="element" width="130" hotspot_x="69" link_type="simple" hotspot_y="17" version="0.90">
+    <uuid uuid="{b7e48182-9088-4943-94aa-31563dc3cb61}"/>
+    <names>
+        <name lang="en">L298N Dual H-Bridge Motor Driver</name>
+    </names>
+    <elementInformations/>
+    <informations></informations>
+    <description>
+        <rect height="30" rx="0" ry="0" y="-10" width="110" x="-60" antialias="false" style="line-style:normal;line-weight:normal;filling:none;color:black"/>
+        <text font="Monospace,2,-1,0,50,0,0,0,0,0" rotation="0" text="OUT2" y="11" x="-59" color="#000000"/>
+        <text font="Monospace,2,-1,0,50,0,0,0,0,0" rotation="0" text="OUT3" y="11" x="42" color="#000000"/>
+        <text font="Monospace,2,-1,0,50,0,0,0,0,0" rotation="270" text="ENA" y="19" x="-9" color="#000000"/>
+        <text font="Monospace,2,-1,0,50,0,0,0,0,0" rotation="270" text="IN1" y="19" x="1" color="#000000"/>
+        <text font="Monospace,2,-1,0,50,0,0,0,0,0" rotation="270" text="IN2" y="19" x="11" color="#000000"/>
+        <text font="Monospace,2,-1,0,50,0,0,0,0,0" rotation="270" text="IN3" y="19" x="21" color="#000000"/>
+        <text font="Monospace,2,-1,0,50,0,0,0,0,0" rotation="270" text="IN4" y="19" x="31" color="#000000"/>
+        <text font="Monospace,2,-1,0,50,0,0,0,0,0" rotation="270" text="ENB" y="19" x="41" color="#000000"/>
+        <text font="Monospace,2,-1,0,50,0,0,0,0,0" rotation="270" text="5-35V" y="19" x="-49" color="#000000"/>
+        <text font="Monospace,2,-1,0,50,0,0,0,0,0" rotation="270" text="GND" y="19" x="-39" color="#000000"/>
+        <text font="Monospace,2,-1,0,50,0,0,0,0,0" rotation="270" text="+5V" y="19" x="-29" color="#000000"/>
+        <text font="Monospace,2,-1,0,50,0,0,0,0,0" rotation="0" text="OUT1" y="1" x="-59" color="#000000"/>
+        <text font="Monospace,2,-1,0,50,0,0,0,0,0" rotation="0" text="OUT4" y="1" x="42" color="#000000"/>
+        <terminal uuid="{b2d29ce0-ff3e-4873-8e0c-270815c34016}" type="Generic" y="24" x="0" name="" orientation="s"/>
+        <terminal uuid="{7c8ba6a1-166c-4efc-9e86-32d8231c778b}" type="Generic" y="10" x="54" name="" orientation="e"/>
+        <terminal uuid="{961f8d9f-d587-4bf0-9de2-3d14dee83889}" type="Generic" y="24" x="-50" name="" orientation="s"/>
+        <terminal uuid="{1767821f-0ac2-43c2-a00d-23667aa47c38}" type="Generic" y="24" x="-30" name="" orientation="s"/>
+        <terminal uuid="{2d49abcb-ed56-4674-89f4-4f75d695cfb3}" type="Generic" y="24" x="-40" name="" orientation="s"/>
+        <terminal uuid="{1a4298c7-0c20-43df-8413-ca2bb1fd3127}" type="Generic" y="24" x="-10" name="" orientation="s"/>
+        <terminal uuid="{e5a2ec43-e6ad-4da3-a897-d81837ad20e5}" type="Generic" y="24" x="20" name="" orientation="s"/>
+        <terminal uuid="{94893e2f-400b-4dd6-9006-0bbba1c95a0c}" type="Generic" y="0" x="-64" name="" orientation="w"/>
+        <terminal uuid="{db134e48-d2e7-4ca8-8361-3073b7c290e6}" type="Generic" y="0" x="54" name="" orientation="e"/>
+        <terminal uuid="{dbdd23bc-c27a-4e23-b8d2-a67a9325e998}" type="Generic" y="10" x="-64" name="" orientation="w"/>
+        <terminal uuid="{ccb06232-cd07-4b05-b34b-3a839aedd96c}" type="Generic" y="24" x="30" name="" orientation="s"/>
+        <terminal uuid="{a114b7fd-fc58-4eb0-9735-431b09255ed7}" type="Generic" y="24" x="40" name="" orientation="s"/>
+        <terminal uuid="{3d4488f4-4e3c-4c43-b66d-854400e91ee4}" type="Generic" y="24" x="10" name="" orientation="s"/>
+    </description>
+</definition>

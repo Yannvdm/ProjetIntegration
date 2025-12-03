@@ -1,0 +1,93 @@
+<definition height="120" type="element" width="50" hotspot_x="19" link_type="simple" hotspot_y="55" version="0.90">
+    <uuid uuid="{61d36f8d-141d-4624-8262-3011bfe8024c}"/>
+    <names>
+        <name lang="en">Raspberry Pi Pico W 2022</name>
+    </names>
+    <elementInformations/>
+    <informations></informations>
+    <description>
+        <text font="Monospace,2,-1,0,50,0,0,0,0,0" rotation="0" text="GP2" y="-24" x="-9" color="#000000"/>
+        <text font="Monospace,2,-1,0,50,0,0,0,0,0" rotation="0" text="GP4" y="-14" x="-9" color="#000000"/>
+        <text font="Monospace,2,-1,0,50,0,0,0,0,0" rotation="0" text="GP14" y="51" x="-9" color="#000000"/>
+        <text font="Monospace,2,-1,0,50,0,0,0,0,0" rotation="0" text="GND" y="21" x="-9" color="#000000"/>
+        <text font="Monospace,2,-1,0,50,0,0,0,0,0" rotation="0" text="GP10" y="26" x="-9" color="#000000"/>
+        <text font="Monospace,2,-1,0,50,0,0,0,0,0" rotation="0" text="GP5" y="-9" x="-9" color="#000000"/>
+        <rect height="105" rx="0" ry="0" y="-45" width="30" x="-10" antialias="false" style="line-style:normal;line-weight:normal;filling:none;color:black"/>
+        <text font="Monospace,2,-1,0,50,0,0,0,0,0" rotation="0" text="GND" y="-4" x="-9" color="#000000"/>
+        <text font="Monospace,2,-1,0,50,0,0,0,0,0" rotation="0" text="VSYS" y="-34" x="11" color="#000000"/>
+        <text font="Monospace,2,-1,0,50,0,0,0,0,0" rotation="0" text="GND" y="-29" x="-9" color="#000000"/>
+        <text font="Monospace,2,-1,0,50,0,0,0,0,0" rotation="0" text="GP6" y="1" x="-9" color="#000000"/>
+        <text font="Monospace,2,-1,0,50,0,0,0,0,0" rotation="0" text="GP3" y="-19" x="-9" color="#000000"/>
+        <text font="Monospace,2,-1,0,50,0,0,0,0,0" rotation="0" text="GP1" y="-34" x="-9" color="#000000"/>
+        <text font="Monospace,2,-1,0,50,0,0,0,0,0" rotation="0" text="GP0" y="-39" x="-9" color="#000000"/>
+        <text font="Monospace,2,-1,0,50,0,0,0,0,0" rotation="0" text="GND" y="-29" x="13" color="#000000"/>
+        <text font="Monospace,2,-1,0,50,0,0,0,0,0" rotation="0" text="GND" y="46" x="-9" color="#000000"/>
+        <text font="Monospace,2,-1,0,50,0,0,0,0,0" rotation="0" text="GP7" y="6" x="-9" color="#000000"/>
+        <text font="Monospace,2,-1,0,50,0,0,0,0,0" rotation="0" text="GP15" y="56" x="-9" color="#000000"/>
+        <text font="Monospace,2,-1,0,50,0,0,0,0,0" rotation="0" text="3V3_EN" y="-24" x="8" color="#000000"/>
+        <text font="Monospace,2,-1,0,50,0,0,0,0,0" rotation="0" text="GP11" y="31" x="-9" color="#000000"/>
+        <text font="Monospace,2,-1,0,50,0,0,0,0,0" rotation="0" text="GP8" y="11" x="-9" color="#000000"/>
+        <text font="Monospace,2,-1,0,50,0,0,0,0,0" rotation="0" text="3V3(OUT)" y="-19" x="5" color="#000000"/>
+        <text font="Monospace,2,-1,0,50,0,0,0,0,0" rotation="0" text="GP12" y="36" x="-9" color="#000000"/>
+        <text font="Monospace,2,-1,0,50,0,0,0,0,0" rotation="0" text="GP9" y="16" x="-9" color="#000000"/>
+        <text font="Monospace,2,-1,0,50,0,0,0,0,0" rotation="0" text="ADC_VREF" y="-14" x="4" color="#000000"/>
+        <text font="Monospace,2,-1,0,50,0,0,0,0,0" rotation="0" text="GP13" y="41" x="-9" color="#000000"/>
+        <text font="Monospace,2,-1,0,50,0,0,0,0,0" rotation="0" text="GP28" y="-9" x="11" color="#000000"/>
+        <text font="Monospace,2,-1,0,50,0,0,0,0,0" rotation="0" text="GND" y="-4" x="13" color="#000000"/>
+        <text font="Monospace,2,-1,0,50,0,0,0,0,0" rotation="0" text="GP27" y="1" x="11" color="#000000"/>
+        <text font="Monospace,2,-1,0,50,0,0,0,0,0" rotation="0" text="GP17" y="51" x="11" color="#000000"/>
+        <text font="Monospace,2,-1,0,50,0,0,0,0,0" rotation="0" text="GND" y="21" x="13" color="#000000"/>
+        <text font="Monospace,2,-1,0,50,0,0,0,0,0" rotation="0" text="GP21" y="26" x="11" color="#000000"/>
+        <text font="Monospace,2,-1,0,50,0,0,0,0,0" rotation="0" text="GP26" y="6" x="11" color="#000000"/>
+        <text font="Monospace,2,-1,0,50,0,0,0,0,0" rotation="0" text="GP16" y="56" x="11" color="#000000"/>
+        <text font="Monospace,2,-1,0,50,0,0,0,0,0" rotation="0" text="GND" y="46" x="13" color="#000000"/>
+        <text font="Monospace,2,-1,0,50,0,0,0,0,0" rotation="0" text="VBUS" y="-39" x="11" color="#000000"/>
+        <text font="Monospace,2,-1,0,50,0,0,0,0,0" rotation="0" text="GP20" y="31" x="11" color="#000000"/>
+        <text font="Monospace,2,-1,0,50,0,0,0,0,0" rotation="0" text="RUN" y="11" x="13" color="#000000"/>
+        <text font="Monospace,2,-1,0,50,0,0,0,0,0" rotation="0" text="GP22" y="16" x="11" color="#000000"/>
+        <text font="Monospace,2,-1,0,50,0,0,0,0,0" rotation="0" text="GP19" y="36" x="11" color="#000000"/>
+        <text font="Monospace,2,-1,0,50,0,0,0,0,0" rotation="0" text="GP18" y="41" x="11" color="#000000"/>
+        <terminal uuid="{44c38b38-40d5-4b0a-bd21-3cf731ad04e2}" type="Generic" y="25" x="24" name="" orientation="e"/>
+        <terminal uuid="{e00d3e4e-63b4-4791-9c3a-a56e18aed1ae}" type="Generic" y="-15" x="24" name="" orientation="e"/>
+        <terminal uuid="{c50cfb7f-8b32-4a15-aec8-8f3b279758ee}" type="Generic" y="-10" x="24" name="" orientation="e"/>
+        <terminal uuid="{24465177-b27c-48e5-9fef-c9ae9eb17af9}" type="Generic" y="-20" x="-14" name="" orientation="w"/>
+        <terminal uuid="{b4b5eacc-eec1-4559-90ed-5344362634fe}" type="Generic" y="-20" x="24" name="" orientation="e"/>
+        <terminal uuid="{ce4edf88-1c41-4e7a-8e84-624fa12ab80a}" type="Generic" y="-15" x="-14" name="" orientation="w"/>
+        <terminal uuid="{da248488-b3b5-4d75-8f15-297d8be622a0}" type="Generic" y="20" x="24" name="" orientation="e"/>
+        <terminal uuid="{337a6db1-5552-4920-a56d-aefda9a3877e}" type="Generic" y="0" x="24" name="" orientation="e"/>
+        <terminal uuid="{df0edf55-7a62-4b3b-9cda-bb21db7cc896}" type="Generic" y="55" x="24" name="" orientation="e"/>
+        <terminal uuid="{b3f9f4e5-9fcf-4790-845b-b0b6e8aa07ec}" type="Generic" y="25" x="-14" name="" orientation="w"/>
+        <terminal uuid="{5d2463e7-1f7f-4576-b0e2-0ba27f37b225}" type="Generic" y="-25" x="-14" name="" orientation="w"/>
+        <terminal uuid="{3b0e17b9-5036-4d9e-91f4-2318e6dc7776}" type="Generic" y="-40" x="-14" name="" orientation="w"/>
+        <terminal uuid="{b2ae75eb-47d7-4e93-a325-30b84ebbedca}" type="Generic" y="-5" x="-14" name="" orientation="w"/>
+        <terminal uuid="{73ffeca9-15d1-492f-a41e-d9f5b43fe61e}" type="Generic" y="20" x="-14" name="" orientation="w"/>
+        <terminal uuid="{63c23895-efc4-4995-8d48-1158e78c74ec}" type="Generic" y="-49" x="10" name="" orientation="n"/>
+        <terminal uuid="{403b4ca5-e5f3-4110-bb24-9dd416926f01}" type="Generic" y="10" x="-14" name="" orientation="w"/>
+        <terminal uuid="{0909e516-56d3-43e3-8397-f6e413ff1283}" type="Generic" y="10" x="24" name="" orientation="e"/>
+        <terminal uuid="{00a75b72-c091-4408-8bef-74d483208b03}" type="Generic" y="40" x="-14" name="" orientation="w"/>
+        <terminal uuid="{84de3beb-3e34-4819-8ad9-6b5b8b91f25e}" type="Generic" y="0" x="-14" name="" orientation="w"/>
+        <terminal uuid="{1d60ad31-9d11-4e83-a88a-b98c240d41f1}" type="Generic" y="5" x="24" name="" orientation="e"/>
+        <terminal uuid="{292d9b77-1b34-4e39-b5dd-a72379cd1804}" type="Generic" y="-35" x="24" name="" orientation="e"/>
+        <terminal uuid="{15b9e609-56f8-4806-860c-0cc332aa8c81}" type="Generic" y="30" x="24" name="" orientation="e"/>
+        <terminal uuid="{fc3e82e8-b2ef-4acb-b3aa-b3a543780089}" type="Generic" y="5" x="-14" name="" orientation="w"/>
+        <terminal uuid="{8c7f4639-650e-4908-8c30-12f5bd4bada7}" type="Generic" y="-35" x="-14" name="" orientation="w"/>
+        <terminal uuid="{2ce21ba4-0572-466f-8550-c03dc0591be4}" type="Generic" y="-5" x="24" name="" orientation="e"/>
+        <terminal uuid="{f755351d-5873-4b97-82d3-1d2eca9d2c2d}" type="Generic" y="50" x="24" name="" orientation="e"/>
+        <terminal uuid="{5aa030e3-f787-40bd-964e-c5a1d66efd86}" type="Generic" y="40" x="24" name="" orientation="e"/>
+        <terminal uuid="{cc3fab77-f915-49f6-bfe5-bd362f7d1ed6}" type="Generic" y="-49" x="0" name="" orientation="n"/>
+        <terminal uuid="{1cbcbf34-e112-49ed-b234-a1588ec28db1}" type="Generic" y="30" x="-14" name="" orientation="w"/>
+        <terminal uuid="{9c36fc50-9066-4be3-a7e4-575107265c3a}" type="Generic" y="15" x="-14" name="" orientation="w"/>
+        <terminal uuid="{507fe49d-c289-4e6d-ae8e-45dc6563e5fc}" type="Generic" y="-25" x="24" name="" orientation="e"/>
+        <terminal uuid="{56576c03-26e7-48eb-a39c-0bca7c74405f}" type="Generic" y="55" x="-14" name="" orientation="w"/>
+        <terminal uuid="{f222fce0-c81e-4ff0-a56c-998bf41975f9}" type="Generic" y="45" x="-14" name="" orientation="w"/>
+        <terminal uuid="{d30d3795-29c6-48b7-8a8c-35483b7ece82}" type="Generic" y="-30" x="-14" name="" orientation="w"/>
+        <terminal uuid="{bce9180a-911c-4e90-8348-b93342da9851}" type="Generic" y="35" x="-14" name="" orientation="w"/>
+        <terminal uuid="{e055d434-2298-4286-881b-c3d5690fd6e4}" type="Generic" y="45" x="24" name="" orientation="e"/>
+        <terminal uuid="{8cccef02-e6f8-4095-8b0f-5e6120747ae8}" type="Generic" y="-30" x="24" name="" orientation="e"/>
+        <terminal uuid="{d698afcc-b5b5-47c6-a49f-beacc777252a}" type="Generic" y="-10" x="-14" name="" orientation="w"/>
+        <terminal uuid="{35cad852-cb04-470b-bb38-bd5690ef67db}" type="Generic" y="50" x="-14" name="" orientation="w"/>
+        <terminal uuid="{124033e4-6c34-493e-a997-ce96618ed859}" type="Generic" y="-40" x="24" name="" orientation="e"/>
+        <terminal uuid="{605ab990-f59d-4893-b802-b8ff9e763cfa}" type="Generic" y="15" x="24" name="" orientation="e"/>
+        <terminal uuid="{cfe3ea2b-76cc-45ee-a785-5fac9309b093}" type="Generic" y="35" x="24" name="" orientation="e"/>
+    </description>
+</definition>
