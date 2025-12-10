@@ -1,6 +1,5 @@
 from machine import Pin, PWM, time_pulse_us
 import time
-import sys
 import network
 from umqtt.simple import MQTTClient
 import ujson
@@ -16,6 +15,8 @@ if bai.value() == 0:
     buz.error_tone()
     sys.exit()  # Terminate the program immediately
 
+buz.boot_tone()
+
 # --- CONFIGURATION WIFI ---
 SSID = "CharlesRed13"
 PASS = "123456789"
@@ -26,46 +27,46 @@ CLIENT_ID = "pico_robot"
 # --- REGLAGES MOTEURS & LOGIQUE ---
 VITESSE_BASE = 14000      # Vitesse croisière
 VITESSE_VIRAGE = 18000    # Vitesse forte pour le virage
-DUREE_VIRAGE = 0.35      # Temps du virage aveugle (pour faire ~20 degrés)
 
-# --- PINS ---
-enA = PWM(Pin(0))
-in3 = Pin(2, Pin.OUT)
+# IMPORTANT : Temps du virage aveugle (pour faire ~20 degrés)
+# 0.25 = 1/4 de seconde. Ajuste cette valeur !
+DUREE_VIRAGE = 0.35
+
+# --- PINS (Corrigés selon ton test) ---
+enA = PWM(Pin(0));
+in3 = Pin(2, Pin.OUT);
 in4 = Pin(1, Pin.OUT)
-enB = PWM(Pin(3))
-in1 = Pin(4, Pin.OUT)
+enB = PWM(Pin(3));
+in1 = Pin(4, Pin.OUT);
 in2 = Pin(6, Pin.OUT)
-enA.freq(1000)
+enA.freq(1000);
 enB.freq(1000)
 
-# Capteurs Ultrasons
-TRIG = Pin(7, Pin.OUT)
+# Capteurs Ultrasons (Réactivés)
+TRIG = Pin(7, Pin.OUT);
 ECHO = Pin(8, Pin.IN)
 
-# Capteurs IR
-IR_GAUCHE = Pin(10, Pin.IN)
+# Capteurs IR (Corrigés : 10 et 11)
+IR_GAUCHE = Pin(10, Pin.IN);
 IR_DROIT = Pin(11, Pin.IN)
 
 LED = Pin(25, Pin.OUT)
 
 # Variables globales
 action_caisse_type = None
-last_dir_A = 0
-last_dir_B = 0
-last_pwm_A = 0
-last_pwm_B = 0
+last_dir_A = 0; last_dir_B = 0
+last_pwm_A = 0; last_pwm_B = 0
 last_state = None  # Track the last state for sound signals
 
-# --- CONNEXION WIFI ---
+# --- CONNEXION ---
 wlan = network.WLAN(network.STA_IF)
 wlan.active(True)
 wlan.connect(SSID, PASS)
 print("Connexion WiFi...")
-
 # Timeout pour ne pas bloquer si pas de wifi
 timeout = 0
 while not wlan.isconnected() and timeout < 20:
-    LED.toggle()
+    LED.toggle();
     time.sleep(0.2)
     timeout += 1
 
@@ -77,13 +78,13 @@ else:
 
 client = MQTTClient(CLIENT_ID, MQTT_SERV)
 
+
 def callback(topic, msg):
     global action_caisse_type
     print("MQTT:", msg)
-    if msg == b'CAISSE_NOIRE':
-        action_caisse_type = "NOIRE"
-    if msg == b'CAISSE_COULEUR':
-        action_caisse_type = "COULEUR"
+    if msg == b'CAISSE_NOIRE':  action_caisse_type = "NOIRE"
+    if msg == b'CAISSE_COULEUR': action_caisse_type = "COULEUR"
+
 
 try:
     if wlan.isconnected():
@@ -94,21 +95,23 @@ try:
 except Exception as e:
     print("Err MQTT", e)
 
+
 # --- FONCTIONS ---
+
 def send_mqtt(etat, manoeuvre, dist=0, obs=False):
-    if not wlan.isconnected():
-        return
+    if not wlan.isconnected(): return
     msg = ujson.dumps({"etat": etat, "manoeuvre": manoeuvre, "distance": round(dist, 1), "obstacle": obs})
     try:
         client.publish(MQTT_TOPIC_STATUS, msg)
     except:
         pass
 
+
 def get_distance():
-    TRIG.value(0)
+    TRIG.value(0);
     time.sleep_us(2)
-    TRIG.value(1)
-    time.sleep_us(10)
+    TRIG.value(1);
+    time.sleep_us(10);
     TRIG.value(0)
     try:
         d = time_pulse_us(ECHO, 1, 30000)
@@ -116,64 +119,53 @@ def get_distance():
     except:
         return 999
 
+
 # --- PILOTAGE ---
+
 def stop_moteurs():
     global last_dir_A, last_dir_B, last_pwm_A, last_pwm_B
-    enA.duty_u16(0)
-    enB.duty_u16(0)
-    in1.low()
-    in2.low()
-    in3.low()
-    in4.low()
-    last_dir_A = 0
-    last_dir_B = 0
-    last_pwm_A = 0
-    last_pwm_B = 0
+    enA.duty_u16(0); enB.duty_u16(0)
+    in1.low(); in2.low(); in3.low(); in4.low()
+    last_dir_A = 0; last_dir_B = 0
+    last_pwm_A = 0; last_pwm_B = 0
+
 
 def piloter(vg, vd):
     global last_dir_A, last_dir_B, last_pwm_A, last_pwm_B
+
     da = 1 if vg > 0 else (-1 if vg < 0 else 0)
     db = 1 if vd > 0 else (-1 if vd < 0 else 0)
+
     if (da != 0 and da != last_dir_A) or (db != 0 and db != last_dir_B):
-        enA.duty_u16(0)
-        enB.duty_u16(0)
-    if vg > 0:
-        in3.high()
-        in4.low()
-    elif vg < 0:
-        in3.low()
-        in4.high()
-    else:
-        in3.low()
-        in4.low()
-    if vd > 0:
-        in1.high()
-        in2.low()
-    elif vd < 0:
-        in1.low()
-        in2.high()
-    else:
-        in1.low()
-        in2.low()
+        enA.duty_u16(0); enB.duty_u16(0)
+
+    if vg > 0: in3.high(); in4.low()
+    elif vg < 0: in3.low(); in4.high()
+    else: in3.low(); in4.low()
+
+    if vd > 0: in1.high(); in2.low()
+    elif vd < 0: in1.low(); in2.high()
+    else: in1.low(); in2.low()
+
     target_pwm_A = abs(int(vg))
     target_pwm_B = abs(int(vd))
+
     # Kickstart
     if (target_pwm_A > 0 and last_pwm_A == 0) or (target_pwm_B > 0 and last_pwm_B == 0):
-        enA.duty_u16(40000)
-        enB.duty_u16(40000)
+        enA.duty_u16(40000); enB.duty_u16(40000)
         time.sleep(0.05)
+
     enA.duty_u16(target_pwm_A)
     enB.duty_u16(target_pwm_B)
-    last_dir_A = da
-    last_dir_B = db
-    last_pwm_A = target_pwm_A
-    last_pwm_B = target_pwm_B
+
+    last_dir_A = da; last_dir_B = db
+    last_pwm_A = target_pwm_A; last_pwm_B = target_pwm_B
+
 
 # --- MAIN ---
+
 print("Go: Robot Complet (Nouvelle Logique IR).")
-buz.boot_tone()  # Play cheerful boot tone
 stop_moteurs()
-time.sleep(2)
 tick_log = 0
 
 print(":) HELLO")
