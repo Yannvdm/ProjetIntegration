@@ -131,8 +131,7 @@ def run_visualization():
         now = time.time()
         dt = now - last_time
         last_time = now
-        if dt > 0.1: 
-            dt = 0.1
+
 
         if state == "CHERCHE CAISSE":
             # On cherche la zone de ramassage la plus proche avec du stock
