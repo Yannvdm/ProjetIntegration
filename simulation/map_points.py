@@ -1,4 +1,3 @@
-# map_points.py
 import constants as c
 
 
@@ -14,6 +13,7 @@ class Zone:
         self.couleur = ''
         self.type = ''
         self.nb_caisses = 0
+        self.max_caisses = 50
 
     @property
     def centre(self):
@@ -36,6 +36,7 @@ class GardeManger(Zone):
         self.largeur = self.profondeur = c.GARDE_MANGER_TAILLE
         self.couleur = 'green'
         self.type = 'gm'
+        self.max_caisses = 4
 
 
 class Ramassage(Zone):

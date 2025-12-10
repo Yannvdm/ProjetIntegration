@@ -6,11 +6,45 @@ import robot
 import os
 import time
 import random
+import datetime
+import json
+import dataclasses
 import tkinter as tk
 from menu import Launcher
 
 
-# Fonction pour calculer le temps d'une action avec bruit et échec
+def save_match_history(score, config):
+    filename = "matches.json"
+
+    # 1. On convertit la config (DataClass) en dictionnaire simple
+    config_dict = dataclasses.asdict(config)
+
+    # 2. On prépare l'entrée pour l'historique
+    new_entry = {
+        "date": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "score": score,
+        "robot_color": config.color,
+        "config": config_dict
+    }
+
+    # 3. On charge l'existant ou on crée une liste vide
+    history = []
+    if os.path.exists(filename):
+        try:
+            with open(filename, "r") as f:
+                history = json.load(f)
+        except:
+            history = []  # Si fichier corrompu, on repart à zéro
+
+    # 4. On ajoute et on sauvegarde
+    history.append(new_entry)
+
+    with open(filename, "w") as f:
+        json.dump(history, f, indent=4)
+
+    print(f"--> Résultat sauvegardé dans {filename} (Total parties: {len(history)})")
+
+
 def calculate_action_duration(base_time, noise, prob_fail, fail_penalty):
     duration = base_time + random.uniform(0, noise)
     if duration < 0.1: duration = 0.1 # Minimum physique
@@ -21,6 +55,29 @@ def calculate_action_duration(base_time, noise, prob_fail, fail_penalty):
         duration += fail_penalty
 
     return duration
+
+
+def calculate_score(zones, team_color):
+    """
+    Calcule le score actuel.
+    Pour l'instant (démo solo), on compte tout ce qui est dans les GM + le Nid de la couleur du robot.
+    """
+    score = 0
+    target_nid_name = "Nid Bleu" if team_color == "blue" else "Nid Jaune"
+    nb_caisses_nid = 0
+    nb_caisse_gm = 0
+
+    for z in zones:
+        if z.nb_caisses > 0:
+            if z.type == 'nid' and z.nom == target_nid_name:
+                score += z.nb_caisses * 1  # 1 point par caisse au nid
+                nb_caisses_nid += z.nb_caisses
+
+            elif z.type == 'gm':
+                score += z.nb_caisses * 3  # 3 points par caisse en GM (bonus)
+                nb_caisse_gm += z.nb_caisses
+
+    return score, nb_caisses_nid, nb_caisse_gm
 
 
 def run_visualization():
@@ -56,21 +113,26 @@ def run_visualization():
 
     # 3. Robot
     bot = robot.Robot(x=2800, y=1800, theta=180, color='blue',
-                      speed=config.speed, speed_noise=config.speed_noise)
+                      speed=config.speed, speed_noise=config.speed_noise, capacity=config.capacity)
     bot.draw(ax)
 
     # --- VARIABLES DE SIMULATION ---
-    MATCH_DURATION = 90.0
+    MATCH_DURATION = 90
     current_time = 0.0
-    dt = 0.1
+    last_time = time.time()
 
     state = "CHERCHE CAISSE"
     target_zone = None
     action_end_time = 0.2
-
+    fini = False
     while current_time < MATCH_DURATION:
 
         # --- MACHINE A ETATS ---
+        now = time.time()
+        dt = now - last_time
+        last_time = now
+        if dt > 0.1: 
+            dt = 0.1
 
         if state == "CHERCHE CAISSE":
             # On cherche la zone de ramassage la plus proche avec du stock
@@ -100,15 +162,19 @@ def run_visualization():
             if current_time >= action_end_time:
                 # Action terminée
                 target_zone.nb_caisses -= 1
+                bot.stock += 1
                 compteurs_visuels[target_zone.nom].set_text(str(target_zone.nb_caisses))
 
-                # Décision de la destination (Nid vs GM)
-                destination = bot.decide_strategy(zones, config.risk)
-                if destination:
-                    target_zone = destination
-                    state = "VERS DEPOT"
-                else:
-                    state = "FINISHED"  # Normalement pas mdr
+                if bot.stock < bot.capacity:
+                    state = "CHERCHE CAISSE"
+                else:   
+                    # Décision de la destination (Nid vs GM)
+                    destination = bot.decide_strategy(zones, config.risk)
+                    if destination:
+                        target_zone = destination
+                        state = "VERS DEPOT"
+                    else:
+                        state = "FINISHED"  # Normalement pas mdr
 
         elif state == "VERS DEPOT":
             tx, ty = target_zone.centre
@@ -118,6 +184,7 @@ def run_visualization():
                 duration = calculate_action_duration(config.t_drop, config.t_drop_noise, 
                                                   config.prob_drop_fail, config.time_drop_fail)
                 action_end_time = current_time + duration
+
                 print(f"[{current_time:.1f}s] Dépose en cours... ({duration:.1f}s)")
                 state = "DROP"
 
@@ -125,30 +192,45 @@ def run_visualization():
             if current_time >= action_end_time:
                 # Action terminée
                 target_zone.nb_caisses += 1
+                bot.stock -= 1
                 compteurs_visuels[target_zone.nom].set_text(str(target_zone.nb_caisses))
                 print(f"[{current_time:.1f}s] Caisse déposée dans {target_zone.nom}.")
 
-                # On repart chercher une caisse
-                state = "CHERCHE CAISSE"
+                if bot.stock == 0 or target_zone.nb_caisses >= target_zone.max_caisses:
+                    state = "CHERCHE CAISSE"
+                else:
+                    duration = calculate_action_duration(config.t_drop, config.t_drop_noise, 
+                                              config.prob_drop_fail, config.time_drop_fail)
+                    action_end_time = current_time + duration
+                    state = "DROP"
 
         elif state == "FINISHED":
-            pass # On attend la fin du match
+            pass  # On attend la fin du match
 
-        # --- UPDATE GRAPHIQUE ---
-        bot.patch_rect.remove()
-        bot.draw(ax)
-
+        bot.update_graphics(ax)
         current_time += dt
-        ax.set_title(f"Temps: {90 - current_time:.1f}s | État: {state}")
+        current_score = calculate_score(zones, bot.color) 
+        if current_time < MATCH_DURATION:
+            ax.set_title(f"Temps: {MATCH_DURATION - current_time:.1f}s | État: {state} | Score Bleu: {current_score[0]} (Nid: {current_score[1]}, GM: {current_score[2]})",)
+        else:
+            fini = True
+
 
         plt.draw()
-        plt.pause(dt)
+        plt.pause(0.001)
 
         if not plt.fignum_exists(fig.number):
             break
+    ax.set_title(f"FINI | Score Bleu: {current_score[0]} (Nid: {current_score[1]}, GM: {current_score[2]})",)
 
     plt.ioff()
-    plt.show()
+    plt.close()
+    if fini:
+        final_score = calculate_score(zones, bot.color)
+        print("\n=== FIN DU MATCH ===")
+        print(f"Score Final : {final_score}")
+        save_match_history(final_score, config)
+
 
 if __name__ == "__main__":
     run_visualization()
