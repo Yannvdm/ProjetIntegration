@@ -3,6 +3,19 @@ import time
 import network
 from umqtt.simple import MQTTClient
 import ujson
+from buzzer import Buzzer
+
+# --- Emergency Button Setup ---
+bai = Pin(28, Pin.IN, Pin.PULL_UP)
+buz = Buzzer()
+
+# Check if the emergency button is pressed before starting
+if bai.value() == 0:
+    print("Emergency button is still pressed! Exiting…")
+    buz.error_tone()
+    sys.exit()  # Terminate the program immediately
+
+buz.boot_tone()
 
 # --- CONFIGURATION WIFI ---
 SSID = "CharlesRed13"
@@ -43,6 +56,7 @@ LED = Pin(25, Pin.OUT)
 action_caisse_type = None
 last_dir_A = 0; last_dir_B = 0
 last_pwm_A = 0; last_pwm_B = 0
+last_state = None  # Track the last state for sound signals
 
 # --- CONNEXION ---
 wlan = network.WLAN(network.STA_IF)
@@ -154,16 +168,27 @@ print("Go: Robot Complet (Nouvelle Logique IR).")
 stop_moteurs()
 tick_log = 0
 
+print(":) HELLO")
 while True:
     try:
         client.check_msg()
     except:
         pass
 
+    # Check if the emergency button is pressed
+    if bai.value() == 0:
+        current_state = "switch_stop"
+        if last_state != current_state:
+            print("Robot stopped by emergency button!")
+            buz.emergency_stop_tone()
+        stop_moteurs()
+        break
+
     dist = get_distance()
 
     # 1. ACTION CAISSE (Priorité Vision)
     if action_caisse_type:
+        buz.box_detect()
         stop_moteurs()
         if action_caisse_type == "NOIRE":
             print("Action: Noire")
@@ -177,8 +202,9 @@ while True:
         elif action_caisse_type == "COULEUR":
             print("Action: Couleur")
             send_mqtt("Action", "Bras Simulé", dist, False)
-            for _ in range(6): LED.toggle(); time.sleep(0.3)
-
+            for _ in range(6):
+                LED.toggle()
+                time.sleep(0.3)
         action_caisse_type = None
         stop_moteurs()
         time.sleep(0.5)
@@ -186,6 +212,9 @@ while True:
 
     # 2. OBSTACLE (Ultrasons)
     if dist < 20:
+        current_state = "obstacle"
+        if last_state != current_state:
+            buz.obstacle_detected_tone()
         stop_moteurs()
         send_mqtt("Urgence", "Evitement", dist, True)
         print("Obstacle !")
@@ -194,48 +223,61 @@ while True:
         piloter(VITESSE_VIRAGE, -VITESSE_VIRAGE)
         time.sleep(0.6)
         stop_moteurs()
+        last_state = current_state
         continue
 
     # 3. SUIVI LIGNE (NOUVELLE LOGIQUE BLIND TURN)
     g = IR_GAUCHE.value()
     d = IR_DROIT.value()
     manoeuvre = ""
+    current_state = None
 
     # Cas 1: Ligne au centre (Tout va bien)
     if g == 0 and d == 0:
+        current_state = "forward"
+        if last_state != current_state:
+            buz.move_forward_tone()
         piloter(VITESSE_BASE, VITESSE_BASE)
         manoeuvre = "Tout droit"
-        # Petite pause standard
         time.sleep(0.01)
-
     # Cas 2: Touche à Gauche -> Virage FORCÉ
     elif g == 1 and d == 0:
+        current_state = "turn_left"
+        if last_state != current_state:
+            buz.turn_detected_tone()
         manoeuvre = "Virage Force G"
+        print("Détection G -> Virage Forcé")
         piloter(-VITESSE_VIRAGE, VITESSE_VIRAGE)
-        # On bloque le code ici pour forcer le virage
         time.sleep(DUREE_VIRAGE)
-
     # Cas 3: Touche à Droite -> Virage FORCÉ
     elif g == 0 and d == 1:
+        current_state = "turn_right"
+        if last_state != current_state:
+            buz.turn_detected_tone()
         manoeuvre = "Virage Force D"
+        print("Détection D -> Virage Forcé")
         piloter(VITESSE_VIRAGE, -VITESSE_VIRAGE)
-        # On bloque le code ici pour forcer le virage
         time.sleep(DUREE_VIRAGE)
-
     # Cas 4: Intersection ou Stop
     elif g == 1 and d == 1:
-        stop_moteurs()
+        current_state = "stop"
+        if last_state != current_state:
+            buz.stop_tone()
         manoeuvre = "Stop Ligne"
+        stop_moteurs()
         time.sleep(0.1)
-    
     else:
-        # Perdu ? On continue tout droit ou on s'arrête
+        current_state = "lost"
         piloter(VITESSE_BASE, VITESSE_BASE)
         manoeuvre = "Perdu/Cherche"
         time.sleep(0.01)
 
+    last_state = current_state  # Update the last state
+
     # Logs MQTT (pour debug)
     tick_log += 1
-    if tick_log > 10: 
+    if tick_log > 10:
         send_mqtt("Suivi", manoeuvre, dist, False)
         tick_log = 0
+
+print(":( GOODBYE")
