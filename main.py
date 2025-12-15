@@ -188,6 +188,7 @@ while True:
 
     # 1. ACTION CAISSE (Priorité Vision)
     if action_caisse_type:
+        buz.box_detect()
         stop_moteurs()
         if action_caisse_type == "NOIRE":
             print("Action: Noire")

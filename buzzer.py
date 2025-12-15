@@ -49,7 +49,6 @@ class Buzzer():
             self._play_tone(freq, 200)  # Play each tone for 200ms
             time.sleep_ms(50)  # Short pause between tones
     
-    
     def error_tone(self):
         """Play an error sound."""
         # Play a sequence of tones that sound like an error
@@ -57,11 +56,23 @@ class Buzzer():
         for freq in tones:
             self._play_tone(freq, 150)  # Play each tone for 150ms
             time.sleep_ms(100)  # Short pause between tones
+    
+    def box_detect(self):
+        """Play a sound when a box is detected/perceived by the robot."""
+        tones = [500]
+        for freq in tones:
+            self._play_tone(freq, 200)
+            time.sleep_ms(100)
 
 # Example usage:
 if __name__ == "__main__":
     buzzer = Buzzer()
     # Test all tones
+
+    print("Test: box detected.")
+    buzzer.box_detect()
+    time.sleep(1)
+
     print("Test: boot tone (cheerful)")
     buzzer.boot_tone()
     time.sleep(1)
