@@ -12,7 +12,7 @@ MQTT_SERV = "192.168.137.101"
 MQTT_TOPIC_STATUS = "robot/status"
 CLIENT_ID = "pico_robot"
 
-# --- REGLAGES MOTEURS (BOOST +15%) ---
+# --- REGLAGES MOTEURS ---
 VITESSE_BASE = 15000  # On garde une base saine
 VITESSE_VIRAGE = 26000  # BOOSTÉ (était 20000) pour tourner sec
 
@@ -89,6 +89,7 @@ def callback(topic, msg):
     print("Reçu:", msg)
     if msg == b'CAISSE_NOIRE':  action_caisse_type = "NOIRE"
     if msg == b'CAISSE_COULEUR': action_caisse_type = "COULEUR"
+    if msg == b'ACTION_NID': action_caisse_type = "NID"
 
 
 try:
@@ -222,6 +223,19 @@ while True:
             for _ in range(10):
                 LED.toggle()
                 time.sleep(0.3)
+            if wlan.isconnected(): LED.value(1)
+
+        elif action_caisse_type == "NID":
+            print("Action: Nid trouvé !")
+            send_mqtt("Action", "Nid (Pause 10s)", dist, False)
+            stop_moteurs()
+
+            # Boucle de 10 secondes (20 tours de 0.5s)
+            for _ in range(20):
+                buz.nid_tone()  # Bip sonore défini dans buzzer.py
+                LED.toggle()  # Clignotement visuel
+                time.sleep(0.5)  # Pause entre les bips
+
             if wlan.isconnected(): LED.value(1)
 
         action_caisse_type = None
