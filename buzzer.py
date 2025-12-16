@@ -64,6 +64,10 @@ class Buzzer():
             self._play_tone(freq, 200)
             time.sleep_ms(100)
 
+    def nid_tone(self):
+        """Play a short beep for the nest."""
+        self._play_tone(1800, 100)
+
 # Example usage:
 if __name__ == "__main__":
     buzzer = Buzzer()
